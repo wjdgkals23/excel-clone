@@ -1,0 +1,56 @@
+* {
+    /* 내부 콘텐츠가 padding, border등의 크기를 고려해서 계산됨, <-> content-box */
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+    overflow: scroll;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  #grid-container {
+    display: grid;
+    grid-template-rows: repeat(41, 30px); /* 20 데이터 행 + 1 헤더 행 */
+    grid-template-columns: 50px repeat(30, 100px); /* 1 행 헤더 + 10 데이터 열 */
+    border: 1px solid #ccc;
+  }
+  
+  /* 셀 스타일 */
+  .cell {
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .cell:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* 헤더 셀 스타일 */
+  .header-cell {
+    background-color: #f9f9f9;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* 셀 편집 시 스타일 */
+  .cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    font-size: 14px;
+  }
