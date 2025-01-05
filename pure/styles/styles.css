@@ -58,7 +58,7 @@ p {
 #grid td {
     border: 1px solid #ccc;
     padding: 5px;
-    min-width: 50px;
+    min-width: 100px;
     height: 10px;
     text-align: left;
     overflow: hidden;

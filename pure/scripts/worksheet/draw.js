@@ -125,10 +125,18 @@ function addEvent(activeCell) {
 
     if (element) {
       setActiveCell(element);
+
+      const worksheet = document.getElementById('worksheet');
+      const grid = document.getElementById('grid');
+      const stickyWidth = grid.querySelector('th').offsetWidth;
+      const cellLeft = element.offsetLeft;
+      if (cellLeft < worksheet.scrollLeft) {
+        worksheet.scrollLeft = cellLeft - stickyWidth;
+      }
+
       element.scrollIntoView({
         behavior: 'instant',
         block: 'end',
-        inline: 'nearest',
       });
     }
   });
