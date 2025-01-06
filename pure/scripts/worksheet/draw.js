@@ -80,6 +80,9 @@ function addEvent(activeCell) {
   const gridBody = document
     .getElementById('grid')
     .getElementsByTagName('tbody')[0];
+  const gridHeader = document
+    .getElementById('grid')
+    .getElementsByTagName('thead')[0];
   // 셀 클릭 시 편집 모드로 전환 (기본적으로 contenteditable="true" 설정)
   gridBody.addEventListener('dblclick', (e) => {
     if (e.target.tagName === 'TD') {
@@ -96,27 +99,52 @@ function addEvent(activeCell) {
 
   // 오잉 왜 키보드는 document에 붙이지??
   document.addEventListener('keydown', (e) => {
-    // overflow 시 스크롤 방지?
-    e.preventDefault();
+    // 내려가는 기능이 preventDefault가 사라지면서, 덜그덕 거리면서 내려가는 상황
     if (!activeCell) return;
 
     let cellRow = activeCell.dataset.row;
     let cellCol = activeCell.dataset.col;
+    let withCtrl = e.ctrlKey || e.metaKey;
 
-    // 예외 처리
-    switch (e.key) {
-      case 'ArrowUp':
-        cellRow--;
-        break;
-      case 'ArrowRight':
-        cellCol++;
-        break;
-      case 'ArrowDown':
-        cellRow++;
-        break;
-      case 'ArrowLeft':
-        cellCol--;
-        break;
+    if (
+      e.key === 'ArrowDown' ||
+      e.key === 'ArrowUp' ||
+      e.key === 'ArrowLeft' ||
+      e.key === 'ArrowRight'
+    )
+      e.preventDefault();
+
+    if (withCtrl) {
+      switch (e.key) {
+        case 'ArrowUp':
+          // 가장 끝에 있는 놈
+          cellRow = 0;
+          break;
+        case 'ArrowRight':
+          cellCol = 25;
+          break;
+        case 'ArrowDown':
+          cellRow = 99;
+          break;
+        case 'ArrowLeft':
+          cellCol = 0;
+          break;
+      }
+    } else {
+      switch (e.key) {
+        case 'ArrowUp':
+          cellRow--;
+          break;
+        case 'ArrowRight':
+          cellCol++;
+          break;
+        case 'ArrowDown':
+          cellRow++;
+          break;
+        case 'ArrowLeft':
+          cellCol--;
+          break;
+      }
     }
 
     const element = document.querySelector(
@@ -127,17 +155,33 @@ function addEvent(activeCell) {
       setActiveCell(element);
 
       const worksheet = document.getElementById('worksheet');
-      const grid = document.getElementById('grid');
-      const stickyWidth = grid.querySelector('th').offsetWidth;
+      const stickyWidth = gridBody.querySelector('th').offsetWidth;
+      const stickyHeight = gridHeader.offsetHeight;
+
+      // 셀의 위치와 스크롤 영역 계산
       const cellLeft = element.offsetLeft;
-      if (cellLeft < worksheet.scrollLeft) {
+      const cellRight = cellLeft + element.offsetWidth;
+      const cellTop = element.offsetTop;
+      const cellBottom = cellTop + element.offsetHeight;
+
+      const scrollLeft = worksheet.scrollLeft;
+      const scrollTop = worksheet.scrollTop;
+      const viewWidth = worksheet.clientWidth;
+      const viewHeight = worksheet.clientHeight;
+
+      // 가로 스크롤 조정
+      if (cellLeft < scrollLeft + stickyWidth) {
         worksheet.scrollLeft = cellLeft - stickyWidth;
+      } else if (cellRight > scrollLeft + viewWidth) {
+        worksheet.scrollLeft = cellRight - viewWidth;
       }
 
-      element.scrollIntoView({
-        behavior: 'instant',
-        block: 'end',
-      });
+      // 세로 스크롤 조정
+      if (cellTop < scrollTop + stickyHeight) {
+        worksheet.scrollTop = cellTop - stickyHeight;
+      } else if (cellBottom > scrollTop + viewHeight) {
+        worksheet.scrollTop = cellBottom - viewHeight;
+      }
     }
   });
 }
