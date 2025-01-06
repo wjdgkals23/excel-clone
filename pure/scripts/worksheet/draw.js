@@ -97,9 +97,7 @@ function addEvent(activeCell) {
     }
   });
 
-  // 오잉 왜 키보드는 document에 붙이지??
   document.addEventListener('keydown', (e) => {
-    // 내려가는 기능이 preventDefault가 사라지면서, 덜그덕 거리면서 내려가는 상황
     if (!activeCell) return;
 
     let cellRow = activeCell.dataset.row;
@@ -117,7 +115,7 @@ function addEvent(activeCell) {
     if (withCtrl) {
       switch (e.key) {
         case 'ArrowUp':
-          // 가장 끝에 있는 놈
+          // 데이터를 활요한 영역 개발한 후에 대응하는 것으로 정리
           cellRow = 0;
           break;
         case 'ArrowRight':
