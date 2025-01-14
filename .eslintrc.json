@@ -3,5 +3,13 @@
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.md"],
+      "rules": {
+        "prettier/prettier": "off"
+      }
+    }
+  ]
 }

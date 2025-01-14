@@ -32,6 +32,7 @@ p {
     top: -0.1px;
     z-index: 1;
     text-align: center;
+    user-select: none;
 }
 
 #grid #origin-point {
@@ -53,6 +54,7 @@ p {
     height: 15px;
     position: sticky;
     left: 0px;
+    user-select: none;
 }
   
 #grid td {
@@ -75,5 +77,10 @@ p {
 }
 
 #grid td.active {
-    border: 2px solid #007bff;
+    border: 2px solid #007bff !important;
+}
+
+#grid td.selected {
+    border: 1px solid #007bff;
+    background-color: #d3d3d3;
 }
