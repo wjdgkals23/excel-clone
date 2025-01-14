@@ -20,6 +20,7 @@ export function layoutSheet() {
   return (function (_activeCell) {
     drawSheet();
     addEvent(_activeCell);
+    addMouseEvent();
   })(activeCell);
 }
 
@@ -91,7 +92,7 @@ function addEvent(activeCell) {
     }
   });
 
-  gridBody.addEventListener('click', (e) => {
+  gridBody.addEventListener('mousedown', (e) => {
     if (e.target.tagName === 'TD') {
       setActiveCell(e.target);
     }
@@ -115,15 +116,19 @@ function addEvent(activeCell) {
     if (withCtrl) {
       switch (e.key) {
         case 'ArrowUp':
-          // 데이터를 활요한 영역 개발한 후에 대응하는 것으로 정리
           cellRow = 0;
           break;
-        case 'ArrowRight':
-          cellCol = 25;
+        case 'ArrowRight': {
+          const maxCol = document.querySelector('thead').querySelector('tr')
+            .children.length;
+          cellCol = maxCol - 2;
           break;
-        case 'ArrowDown':
-          cellRow = 99;
+        }
+        case 'ArrowDown': {
+          const maxRow = document.querySelector('tbody').children.length;
+          cellRow = maxRow - 1;
           break;
+        }
         case 'ArrowLeft':
           cellCol = 0;
           break;
@@ -180,6 +185,68 @@ function addEvent(activeCell) {
       } else if (cellBottom > scrollTop + viewHeight) {
         worksheet.scrollTop = cellBottom - viewHeight;
       }
+    }
+  });
+}
+
+function addMouseEvent() {
+  const gridBody = document
+    .getElementById('grid')
+    .getElementsByTagName('tbody')[0];
+  let startCell = null;
+  let endCell = null;
+
+  const clearSelection = () => {
+    // 기존 선택된 셀 초기화
+    const selectedCells = gridBody.querySelectorAll('.selected');
+    selectedCells.forEach((cell) => cell.classList.remove('selected'));
+  };
+
+  const selectCells = (start, end) => {
+    clearSelection();
+
+    const startRow = Math.min(start.dataset.row, end.dataset.row);
+    const endRow = Math.max(start.dataset.row, end.dataset.row);
+    const startCol = Math.min(start.dataset.col, end.dataset.col);
+    const endCol = Math.max(start.dataset.col, end.dataset.col);
+
+    for (let row = startRow; row <= endRow; row++) {
+      for (let col = startCol; col <= endCol; col++) {
+        const cell = document.querySelector(
+          `td[data-row="${row}"][data-col="${col}"]`
+        );
+        if (cell) {
+          cell.classList.add('selected'); // 선택 상태 표시
+        }
+      }
+    }
+  };
+
+  gridBody.addEventListener('mousedown', (e) => {
+    if (e.target.tagName === 'TD') {
+      startCell = e.target;
+      endCell = e.target;
+      clearSelection();
+    }
+  });
+
+  gridBody.addEventListener('mousemove', (e) => {
+    if (e.target.tagName === 'TD') {
+      if ((startCell !== null, endCell !== null)) {
+        if (
+          JSON.stringify(endCell.dataset) !== JSON.stringify(e.target.dataset)
+        ) {
+          endCell = e.target;
+          selectCells(startCell, endCell);
+        }
+      }
+    }
+  });
+
+  gridBody.addEventListener('mouseup', (e) => {
+    if (e.target.tagName === 'TD') {
+      startCell = null;
+      endCell = null;
     }
   });
 }
